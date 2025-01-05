@@ -2,7 +2,6 @@
 name = "hard_link"
 version = "0.1.0"
 edition = "2021"
-path = src/main.rs
 
 [dependencies]
 native-dialog = "0.5"
