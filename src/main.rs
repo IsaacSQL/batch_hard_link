@@ -16,6 +16,20 @@ fn create_hard_links(src_dir: &Path, dest_dir: &Path) -> io::Result<()> {
     }
     Ok(())
 }
+//copy folders
+fn copy_folder_structure(src: &Path, dest: &Path) -> std::io::Result<()> {
+    for entry in fs::read_dir(src)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_dir() {
+            let new_dest = dest.join(path.file_name().unwrap());
+            fs::create_dir_all(&new_dest)?;
+            create_hard_links(&path, &new_dest)?;
+            copy_folder_structure(&path, &new_dest)?;
+        }
+    }
+    Ok(())
+}
 
 fn main() -> io::Result<()> {
     let src_dir = FileDialog::new()
@@ -29,7 +43,7 @@ fn main() -> io::Result<()> {
         .show_open_single_dir()
         .unwrap()
         .expect("No folder selected");
-
     create_hard_links(Path::new(&src_dir), Path::new(&dest_dir))?;
+    copy_folder_structure(Path::new(&src_dir), Path::new(&dest_dir))?;
     Ok(())
 }
